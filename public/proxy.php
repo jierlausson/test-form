@@ -5,16 +5,17 @@ $payload = file_get_contents('php://input');
 
 // Chama diretamente via 127.0.0.1 (mesmo servidor) passando o Host correto.
 // Isso evita DNS e Cloudflare — conexão interna pura.
-$ch = curl_init('http://127.0.0.1/api/v1/external-leads');
+$ch = curl_init('https://app.stagemyclinic360.com.br/api/v1/external-leads');
 curl_setopt_array($ch, [
     CURLOPT_POST           => true,
     CURLOPT_POSTFIELDS     => $payload,
     CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_SSL_VERIFYPEER => false,
+    CURLOPT_SSL_VERIFYHOST => false,
     CURLOPT_TIMEOUT        => 15,
     CURLOPT_HTTPHEADER     => [
         'Content-Type: application/json',
         'Accept: application/json',
-        'Host: stage.myclinic360.com.br',
         'X-Marketing-Key: tjsJFWHLj6z5z4E9uhkHDHuuahlEp6785PrZHs7eIF0O5qW3yjQFDB6m459JcSt7',
     ],
 ]);
