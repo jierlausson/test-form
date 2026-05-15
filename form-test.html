@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MyClinic360 — Teste de Integração de Leads</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f0f4f8;
+      color: #1a202c;
+      padding: 24px 16px 48px;
+      min-height: 100vh;
+    }
+
+    .wrapper {
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    .header .badge {
+      display: inline-block;
+      background: #ff8c00;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 99px;
+      margin-bottom: 10px;
+    }
+    .header h1 {
+      font-size: 22px;
+      font-weight: 700;
+      color: #0d6b6b;
+    }
+    .header p {
+      font-size: 13px;
+      color: #64748b;
+      margin-top: 4px;
+    }
+
+    /* Instructions card */
+    .instructions {
+      background: #fffbeb;
+      border: 1px solid #fcd34d;
+      border-radius: 10px;
+      padding: 18px 20px;
+      margin-bottom: 24px;
+      font-size: 13.5px;
+      line-height: 1.65;
+    }
+    .instructions h2 {
+      font-size: 14px;
+      font-weight: 700;
+      color: #92400e;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .instructions ol {
+      padding-left: 18px;
+      color: #78350f;
+    }
+    .instructions ol li {
+      margin-bottom: 5px;
+    }
+    .instructions .note {
+      margin-top: 12px;
+      font-size: 12.5px;
+      color: #92400e;
+      background: #fef3c7;
+      border-radius: 6px;
+      padding: 8px 12px;
+    }
+
+    /* Card */
+    .card {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,.06);
+    }
+    .card-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #475569;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .required-badge {
+      font-size: 10px;
+      background: #fee2e2;
+      color: #b91c1c;
+      padding: 1px 6px;
+      border-radius: 99px;
+      text-transform: none;
+      letter-spacing: 0;
+      font-weight: 600;
+    }
+    .optional-badge {
+      font-size: 10px;
+      background: #e0f2fe;
+      color: #0369a1;
+      padding: 1px 6px;
+      border-radius: 99px;
+      text-transform: none;
+      letter-spacing: 0;
+      font-weight: 600;
+    }
+
+    /* Form fields */
+    .field {
+      margin-bottom: 14px;
+    }
+    .field:last-child { margin-bottom: 0; }
+
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 5px;
+    }
+    label .hint {
+      font-weight: 400;
+      color: #9ca3af;
+      margin-left: 4px;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    textarea {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 7px;
+      font-size: 13.5px;
+      color: #111827;
+      background: #fff;
+      transition: border-color .15s;
+      font-family: inherit;
+    }
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: #0d8080;
+      box-shadow: 0 0 0 3px rgba(13,128,128,.12);
+    }
+    textarea {
+      resize: vertical;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    /* Submit button */
+    .submit-wrap {
+      text-align: center;
+      margin-top: 8px;
+    }
+    button[type="submit"] {
+      background: #0d8080;
+      color: #fff;
+      border: none;
+      border-radius: 9px;
+      padding: 13px 36px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background .2s, transform .1s;
+      letter-spacing: .01em;
+    }
+    button[type="submit"]:hover { background: #0a6060; }
+    button[type="submit"]:active { transform: scale(.98); }
+    button[type="submit"]:disabled {
+      background: #94a3b8;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Status messages */
+    #status {
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-top: 20px;
+      font-size: 14px;
+      line-height: 1.65;
+    }
+    #status.loading {
+      background: #f0f9ff;
+      border: 1px solid #7dd3fc;
+      color: #0369a1;
+      text-align: center;
+    }
+    #status.success {
+      background: #f0fdf4;
+      border: 1px solid #86efac;
+      color: #166534;
+    }
+    #status.error {
+      background: #fef2f2;
+      border: 1px solid #fca5a5;
+      color: #991b1b;
+    }
+    #status h3 {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    #status .redirect-url {
+      word-break: break-all;
+      background: #dcfce7;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-family: monospace;
+      font-size: 12px;
+      margin-top: 8px;
+    }
+    #status .countdown {
+      margin-top: 12px;
+      font-size: 13px;
+      color: #15803d;
+      font-weight: 600;
+    }
+    .spinner {
+      display: inline-block;
+      width: 20px; height: 20px;
+      border: 2.5px solid #bae6fd;
+      border-top-color: #0369a1;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Config info */
+    .config-info {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 11.5px;
+      color: #64748b;
+      margin-bottom: 20px;
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .config-info span { display: flex; align-items: center; gap: 4px; }
+    .config-info strong { color: #374151; }
+
+    @media (max-width: 520px) {
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="wrapper">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="badge">Ambiente de Homologação</div>
+    <h1>MyClinic360 — Teste de Integração de Leads</h1>
+    <p>Formulário de teste para validar o envio de leads e o redirecionamento.</p>
+  </div>
+
+  <!-- Config info -->
+  <div class="config-info">
+    <span>🌐 <strong>Ambiente:</strong> STAGE</span>
+    <span>🔗 <strong>Endpoint:</strong> stage.myclinic360.com.br</span>
+    <span>🔑 <strong>Chave:</strong> configurada</span>
+  </div>
+
+  <!-- Instructions -->
+  <div class="instructions">
+    <h2>📋 Como usar este formulário</h2>
+    <ol>
+      <li>Preencha os campos <strong>obrigatórios</strong>: Nome, E-mail e Telefone.</li>
+      <li>Os campos de campanha e questionário já estão pré-preenchidos com dados de exemplo — você pode alterar à vontade.</li>
+      <li>Clique em <strong>"Enviar Lead de Teste"</strong> e aguarde a resposta.</li>
+      <li>Se tudo correr bem, você será <strong>redirecionado automaticamente</strong> em 3 segundos para a página de escolha de fisioterapeuta.</li>
+    </ol>
+    <div class="note">
+      ⚠️ <strong>Use dados fictícios.</strong> Este é um ambiente de homologação (STAGE) — nenhum dado real será processado. O redirecionamento levará à URL de STAGE do MyClinic360.
+    </div>
+  </div>
+
+  <!-- Form -->
+  <form id="leadForm" novalidate>
+
+    <!-- Dados do Paciente -->
+    <div class="card">
+      <div class="card-title">
+        👤 Dados do Paciente
+        <span class="required-badge">Obrigatório</span>
+      </div>
+
+      <div class="field">
+        <label for="full_name">Nome completo</label>
+        <input type="text" id="full_name" placeholder="Ex: João Silva" required>
+      </div>
+
+      <div class="grid-2">
+        <div class="field">
+          <label for="email">E-mail</label>
+          <input type="email" id="email" placeholder="joao.silva@email.com" required>
+        </div>
+        <div class="field">
+          <label for="phone">
+            Telefone <span class="hint">(WhatsApp com DDI)</span>
+          </label>
+          <input type="tel" id="phone" placeholder="+5511999998888" value="+5511999998888" required>
+        </div>
+      </div>
+    </div>
+
+    <!-- Metadados da Campanha -->
+    <div class="card">
+      <div class="card-title">
+        📊 Dados da Campanha
+        <span class="optional-badge">Opcional</span>
+      </div>
+
+      <div class="grid-2">
+        <div class="field">
+          <label for="meta_lead_id">ID do Lead <span class="hint">(meta_lead_id)</span></label>
+          <input type="text" id="meta_lead_id" value="9876543210987">
+        </div>
+        <div class="field">
+          <label for="campaign_name">Nome da Campanha</label>
+          <input type="text" id="campaign_name" value="Campanha_Saude_Masculina_01">
+        </div>
+        <div class="field">
+          <label for="adset_name">Nome do AdSet</label>
+          <input type="text" id="adset_name" value="Publico_Alvo_Interesses">
+        </div>
+        <div class="field">
+          <label for="ad_name">Nome do Anúncio</label>
+          <input type="text" id="ad_name" value="Criativo_Video_02">
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="form_name">Nome do Formulário</label>
+        <input type="text" id="form_name" value="Questionario_Avaliacao_Saude">
+      </div>
+    </div>
+
+    <!-- Respostas do Questionário -->
+    <div class="card">
+      <div class="card-title">
+        📝 Respostas do Questionário
+        <span class="optional-badge">Opcional — JSON</span>
+      </div>
+      <div class="field">
+        <label for="questionnaire">
+          Edite os valores conforme necessário.
+          <span class="hint">Prefixos: de_ = Disfunção Erétil · iu_ = Incontinência · ep_ = Ejaculação</span>
+        </label>
+        <textarea id="questionnaire" rows="12">{
+  "de_01_confianca_erecao": "Moderada",
+  "de_02_frequencia_penetracao": "Algumas vezes (cerca da metade das vezes)",
+  "de_03_manter_pos_penetracao": "A maioria das vezes",
+  "de_04_dificuldade_manter": "Pouco difícil",
+  "de_05_auto_confianca": "Moderada confiança",
+  "iu_01_frequencia_perda_urina": "Nunca",
+  "iu_02_quantidade_urina": "Nenhuma",
+  "ep_01_confianca_retardar": "Baixa",
+  "ep_02_ejaculacao_antes_desejado": "Sim"
+}</textarea>
+      </div>
+    </div>
+
+    <!-- Submit -->
+    <div class="submit-wrap">
+      <button type="submit" id="submitBtn">🚀 Enviar Lead de Teste</button>
+    </div>
+
+  </form>
+
+  <!-- Status -->
+  <div id="status" style="display:none;"></div>
+
+</div>
+
+<script>
+  const API_URL   = 'https://stage.myclinic360.com.br/api/v1/external-leads';
+  const API_KEY   = 'tjsJFWHLj6z5z4E9uhkHDHuuahlEp6785PrZHs7eIF0O5qW3yjQFDB6m459JcSt7';
+
+  const form      = document.getElementById('leadForm');
+  const submitBtn = document.getElementById('submitBtn');
+  const statusEl  = document.getElementById('status');
+
+  function showStatus(type, html) {
+    statusEl.className = type;
+    statusEl.innerHTML = html;
+    statusEl.style.display = 'block';
+    statusEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function val(id) {
+    return document.getElementById(id).value.trim();
+  }
+
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    /* Validação básica */
+    const fullName = val('full_name');
+    const email    = val('email');
+    const phone    = val('phone');
+
+    if (!fullName || !email || !phone) {
+      showStatus('error', '<h3>⚠️ Campos obrigatórios</h3>Preencha Nome, E-mail e Telefone antes de enviar.');
+      return;
+    }
+
+    /* Montar payload */
+    let questionnaireAnswers = {};
+    try {
+      const raw = val('questionnaire');
+      if (raw) questionnaireAnswers = JSON.parse(raw);
+    } catch (_) {
+      showStatus('error', '<h3>⚠️ JSON inválido no Questionário</h3>Verifique a formatação do campo de respostas. Use aspas duplas e vírgulas corretas.');
+      return;
+    }
+
+    const payload = {
+      user_data: {
+        full_name:    fullName,
+        email:        email,
+        phone_number: phone,
+      },
+      lead_metadata: {
+        meta_lead_id:  val('meta_lead_id')    || undefined,
+        campaign_name: val('campaign_name')   || undefined,
+        adset_name:    val('adset_name')      || undefined,
+        ad_name:       val('ad_name')         || undefined,
+        form_name:     val('form_name')       || undefined,
+        created_at:    new Date().toISOString(),
+      },
+      questionnaire_answers: questionnaireAnswers,
+    };
+
+    /* Limpar campos vazios do metadata */
+    Object.keys(payload.lead_metadata).forEach(k => {
+      if (payload.lead_metadata[k] === undefined) delete payload.lead_metadata[k];
+    });
+
+    /* Enviar */
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Enviando…';
+    showStatus('loading', '<span class="spinner"></span> Enviando dados para o servidor…');
+
+    try {
+      const response = await fetch(API_URL, {
+        method:  'POST',
+        headers: {
+          'Content-Type':    'application/json',
+          'X-Marketing-Key': API_KEY,
+          'Accept':          'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (response.status === 201 && data.redirect_url) {
+        /* Sucesso — redirecionar */
+        let count = 3;
+        const updateCountdown = () => {
+          showStatus('success', `
+            <h3>✅ Lead criada com sucesso!</h3>
+            <p>A API retornou a URL de redirecionamento abaixo. Em <strong id="counter">${count}</strong> segundo(s) você será redirecionado automaticamente.</p>
+            <div class="redirect-url">${data.redirect_url}</div>
+            <div class="countdown">Redirecionando em ${count} segundo(s)…</div>
+            <p style="margin-top:12px;font-size:12px;color:#16a34a;">Se não redirecionar, <a href="${data.redirect_url}" style="color:#15803d;font-weight:600;">clique aqui</a>.</p>
+          `);
+        };
+        updateCountdown();
+
+        const timer = setInterval(() => {
+          count--;
+          if (count <= 0) {
+            clearInterval(timer);
+            window.location.href = data.redirect_url;
+          } else {
+            const el = document.getElementById('counter');
+            if (el) el.textContent = count;
+          }
+        }, 1000);
+
+      } else {
+        /* Erro da API */
+        const msg = data.message || JSON.stringify(data, null, 2);
+        showStatus('error', `
+          <h3>❌ Erro da API (HTTP ${response.status})</h3>
+          <p>O servidor retornou um erro:</p>
+          <pre style="margin-top:8px;background:#fee2e2;padding:10px;border-radius:6px;font-size:12px;overflow:auto;">${escapeHtml(msg)}</pre>
+        `);
+      }
+
+    } catch (err) {
+      /* Erro de rede / CORS */
+      const isCors = err instanceof TypeError && err.message.includes('fetch');
+      showStatus('error', isCors ? `
+        <h3>⚠️ Erro de CORS / Rede</h3>
+        <p>O navegador bloqueou a requisição porque o arquivo está sendo aberto localmente (<code>file://</code>).</p>
+        <p style="margin-top:8px;"><strong>Como resolver:</strong> Peça ao desenvolvedor para liberar CORS no servidor de STAGE para origem <code>null</code>, ou acesse este arquivo via servidor local.</p>
+        <p style="margin-top:8px;font-size:12px;color:#7f1d1d;">Detalhe técnico: <code>${escapeHtml(err.message)}</code></p>
+      ` : `
+        <h3>❌ Erro inesperado</h3>
+        <p>${escapeHtml(err.message)}</p>
+      `);
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = '🚀 Enviar Lead de Teste';
+    }
+  });
+
+  function escapeHtml(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+</script>
+
+</body>
+</html>
