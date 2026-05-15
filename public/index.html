@@ -331,9 +331,9 @@
         </div>
         <div class="field">
           <label for="phone">
-            Telefone <span class="hint">(WhatsApp com DDI)</span>
+            Telefone <span class="hint">(celular com DDD)</span>
           </label>
-          <input type="tel" id="phone" placeholder="+5511999998888" value="+5511999998888" required>
+          <input type="tel" id="phone" placeholder="(11) 9 9999-8888" maxlength="16" required>
         </div>
       </div>
     </div>
@@ -415,6 +415,23 @@
   const submitBtn = document.getElementById('submitBtn');
   const statusEl  = document.getElementById('status');
 
+  /* Máscara de telefone: (xx) x xxxx-xxxx */
+  document.getElementById('phone').addEventListener('input', function (e) {
+    let v = e.target.value.replace(/\D/g, '').slice(0, 11);
+    let out = '';
+    if (v.length > 0)  out  = '(' + v.slice(0, 2);
+    if (v.length > 2)  out += ') ' + v.slice(2, 3);
+    if (v.length > 3)  out += ' ' + v.slice(3, 7);
+    if (v.length > 7)  out += '-' + v.slice(7, 11);
+    e.target.value = out;
+  });
+
+  /* Converte "(11) 9 9999-8888" → "+5511999998888" */
+  function phoneToE164(masked) {
+    const digits = masked.replace(/\D/g, '');
+    return '+55' + digits;
+  }
+
   function showStatus(type, html) {
     statusEl.className = type;
     statusEl.innerHTML = html;
@@ -453,7 +470,7 @@
       user_data: {
         full_name:    fullName,
         email:        email,
-        phone_number: phone,
+        phone_number: phoneToE164(phone),
       },
       lead_metadata: {
         meta_lead_id:  val('meta_lead_id')    || undefined,
@@ -525,16 +542,10 @@
       }
 
     } catch (err) {
-      /* Erro de rede / CORS */
-      const isCors = err instanceof TypeError && err.message.includes('fetch');
-      showStatus('error', isCors ? `
-        <h3>⚠️ Erro de CORS / Rede</h3>
-        <p>O navegador bloqueou a requisição porque o arquivo está sendo aberto localmente (<code>file://</code>).</p>
-        <p style="margin-top:8px;"><strong>Como resolver:</strong> Peça ao desenvolvedor para liberar CORS no servidor de STAGE para origem <code>null</code>, ou acesse este arquivo via servidor local.</p>
+      showStatus('error', `
+        <h3>⚠️ Erro de rede / CORS</h3>
+        <p>Não foi possível conectar ao servidor. Verifique sua conexão ou aguarde e tente novamente.</p>
         <p style="margin-top:8px;font-size:12px;color:#7f1d1d;">Detalhe técnico: <code>${escapeHtml(err.message)}</code></p>
-      ` : `
-        <h3>❌ Erro inesperado</h3>
-        <p>${escapeHtml(err.message)}</p>
       `);
     } finally {
       submitBtn.disabled = false;
