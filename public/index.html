@@ -408,8 +408,7 @@
 </div>
 
 <script>
-  const API_URL   = 'https://stage.myclinic360.com.br/api/v1/external-leads';
-  const API_KEY   = 'tjsJFWHLj6z5z4E9uhkHDHuuahlEp6785PrZHs7eIF0O5qW3yjQFDB6m459JcSt7';
+  const API_URL = '/proxy.php';
 
   const form      = document.getElementById('leadForm');
   const submitBtn = document.getElementById('submitBtn');
@@ -497,9 +496,8 @@
       const response = await fetch(API_URL, {
         method:  'POST',
         headers: {
-          'Content-Type':    'application/json',
-          'X-Marketing-Key': API_KEY,
-          'Accept':          'application/json',
+          'Content-Type': 'application/json',
+          'Accept':       'application/json',
         },
         body: JSON.stringify(payload),
       });
