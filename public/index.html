@@ -335,6 +335,10 @@
           </label>
           <input type="tel" id="phone" placeholder="(11) 9 9999-8888" maxlength="16" required>
         </div>
+        <div class="field">
+          <label for="zip_code">CEP <span class="hint">(opcional)</span></label>
+          <input type="text" id="zip_code" placeholder="00000-000" maxlength="9">
+        </div>
       </div>
     </div>
 
@@ -414,6 +418,12 @@
   const submitBtn = document.getElementById('submitBtn');
   const statusEl  = document.getElementById('status');
 
+  /* Máscara de CEP: 00000-000 */
+  document.getElementById('zip_code').addEventListener('input', function (e) {
+    let v = e.target.value.replace(/\D/g, '').slice(0, 8);
+    e.target.value = v.length > 5 ? v.slice(0, 5) + '-' + v.slice(5) : v;
+  });
+
   /* Máscara de telefone: (xx) x xxxx-xxxx */
   document.getElementById('phone').addEventListener('input', function (e) {
     let v = e.target.value.replace(/\D/g, '').slice(0, 11);
@@ -465,11 +475,14 @@
       return;
     }
 
+    const zipCode = val('zip_code');
+
     const payload = {
       user_data: {
         full_name:    fullName,
         email:        email,
         phone_number: phoneToE164(phone),
+        ...(zipCode ? { zip_code: zipCode } : {}),
       },
       lead_metadata: {
         meta_lead_id:  val('meta_lead_id')    || undefined,
